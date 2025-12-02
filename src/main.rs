@@ -23,7 +23,10 @@ fn main() -> Result<()> {
         .ok_or_else(|| anyhow!("Day {} does not exist", cli.day))?;
 
     println!("Solve puzzle \"{}\":", puzzle.name());
-    println!("{}", puzzle.solve());
+
+    let result = puzzle.solve()?;
+
+    println!("{}", result);
 
     Ok(())
 }

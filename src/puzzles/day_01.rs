@@ -1,3 +1,9 @@
+use std::fs::File;
+use std::io::{BufRead, BufReader};
+
+use anyhow::{Result, anyhow, bail};
+use derive_more::Display;
+
 use crate::puzzles::Puzzle;
 
 pub struct Day1 {
@@ -23,7 +29,74 @@ impl Puzzle for Day1 {
         &self.name
     }
 
-    fn solve(&self) -> &str {
-        todo!()
+    fn solve(&self) -> Result<String> {
+        let path = format!("assets/{}-input.txt", self.id());
+        let file = File::open(path)?;
+        let reader = BufReader::new(file);
+
+        let dial = Dial::new();
+        let mut count = 0;
+        for line_result in reader.lines() {
+            let line = line_result?;
+            let (dir, offset) = dir_offset(&line)?;
+
+            dial.rotate(dir, offset);
+
+            if dial.position == 0 {
+                count += 1;
+            }
+        }
+
+        Ok(count.to_string())
+    }
+}
+
+#[derive(Display)]
+enum Dir {
+    Left,
+    Right,
+}
+
+fn dir_offset(line: &str) -> Result<(Dir, u32)> {
+    if line.len() < 2 {
+        bail!("line length ({}) < 2", line.len());
+    }
+
+    let dir_char = line
+        .chars()
+        .nth(0)
+        .ok_or_else(|| anyhow!("could not get first char of line"))?;
+
+    let dir = match dir_char {
+        'L' => Dir::Left,
+        'R' => Dir::Right,
+        _ => bail!("invalid direction char '{}'", dir_char),
+    };
+
+    let offset = line[1..].parse()?;
+
+    Ok((dir, offset))
+}
+
+struct Dial {
+    max: u32,
+    position: u32,
+}
+
+impl Dial {
+    fn new() -> Self {
+        Self {
+            max: 99,
+            position: 50,
+        }
+    }
+
+    fn rotate(&self, dir: Dir, offset: u32) {
+        match dir {
+            Dir::Left => {}
+            Dir::Right => {}
+        }
+
+        todo!("not implemented")
     }
 }

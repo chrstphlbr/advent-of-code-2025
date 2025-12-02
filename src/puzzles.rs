@@ -2,12 +2,14 @@ mod day_01;
 
 use std::collections::HashMap;
 
+use anyhow::Result;
+
 use day_01::Day1;
 
 pub trait Puzzle {
     fn id(&self) -> &str;
     fn name(&self) -> &str;
-    fn solve(&self) -> &str;
+    fn solve(&self) -> Result<String>;
 }
 
 pub fn puzzles() -> HashMap<u8, Box<dyn Puzzle>> {
