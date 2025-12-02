@@ -1,6 +1,8 @@
+mod day_01;
+
 use std::collections::HashMap;
 
-use crate::day_01::Day1;
+use day_01::Day1;
 
 pub trait Puzzle {
     fn id(&self) -> &str;

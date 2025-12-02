@@ -1,4 +1,3 @@
-mod day_01;
 mod puzzles;
 
 use anyhow::{Result, anyhow};
