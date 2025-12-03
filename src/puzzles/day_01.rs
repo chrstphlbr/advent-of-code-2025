@@ -106,7 +106,7 @@ impl Dial {
         let position = i64::from(self.position); // never panics as u32 fits into i64
         let mut new_position: i64 = position - offset;
         while new_position < 0 {
-            new_position = new_position + max
+            new_position = new_position + (max + 1) // add + 1 because the Dial starts at 0
         }
         new_position.try_into().unwrap() // should never panic as the loop ensures a positive new_position
     }
@@ -114,7 +114,7 @@ impl Dial {
     fn rotate_right(&self, offset: u32) -> u32 {
         let mut new_position = self.position + offset;
         while new_position > self.max {
-            new_position = new_position - self.max
+            new_position = new_position - (self.max + 1) // add + 1 because the Dial starts at 0
         }
         new_position
     }
