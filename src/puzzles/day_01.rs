@@ -35,19 +35,14 @@ impl Puzzle for Day1 {
         let reader = BufReader::new(file);
 
         let mut dial = Dial::new();
-        let mut count = 0;
         for line_result in reader.lines() {
             let line = line_result?;
             let (dir, offset) = dir_offset(&line)?;
 
             dial.rotate(dir, offset);
-
-            if dial.position == 0 {
-                count += 1;
-            }
         }
 
-        Ok(count.to_string())
+        Ok(dial.zeros.to_string())
     }
 }
 
@@ -81,6 +76,7 @@ fn dir_offset(line: &str) -> Result<(Dir, u32)> {
 struct Dial {
     max: u32,
     position: u32,
+    zeros: u32,
 }
 
 impl Dial {
@@ -88,34 +84,35 @@ impl Dial {
         Self {
             max: 99,
             position: 50,
+            zeros: 0,
         }
     }
 
     fn rotate(&mut self, dir: Dir, offset: u32) {
-        let new_position = match dir {
-            Dir::Left => self.rotate_left(offset),
-            Dir::Right => self.rotate_right(offset),
-        };
+        let mut current_position = i64::from(self.position);
 
-        self.position = new_position;
-    }
+        let mut count = 0;
+        while count < offset {
+            count += 1;
 
-    fn rotate_left(&self, offset: u32) -> u32 {
-        let max = i64::from(self.max); // never panics as u32 always into i64
-        let offset = i64::from(offset); // never panics as u32 always into i64
-        let position = i64::from(self.position); // never panics as u32 fits into i64
-        let mut new_position: i64 = position - offset;
-        while new_position < 0 {
-            new_position = new_position + (max + 1) // add + 1 because the Dial starts at 0
+            let new_position = match dir {
+                Dir::Left => current_position - 1,
+                Dir::Right => current_position + 1,
+            };
+
+            if new_position == -1 {
+                current_position = i64::from(self.max);
+            } else if new_position == i64::from(self.max) + 1 {
+                current_position = 0;
+            } else {
+                current_position = new_position;
+            }
+
+            if current_position == 0 {
+                self.zeros += 1
+            }
         }
-        new_position.try_into().unwrap() // should never panic as the loop ensures a positive new_position
-    }
 
-    fn rotate_right(&self, offset: u32) -> u32 {
-        let mut new_position = self.position + offset;
-        while new_position > self.max {
-            new_position = new_position - (self.max + 1) // add + 1 because the Dial starts at 0
-        }
-        new_position
+        self.position = current_position.try_into().unwrap(); // should never panic as the loop ensures a positive current_position
     }
 }
