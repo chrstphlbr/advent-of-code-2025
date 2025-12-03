@@ -1,5 +1,4 @@
-use std::fs::File;
-use std::io::{BufRead, BufReader};
+use std::io::BufRead;
 
 use anyhow::{Result, anyhow, bail};
 use derive_more::Display;
@@ -30,9 +29,7 @@ impl Puzzle for Day1 {
     }
 
     fn solve(&self) -> Result<String> {
-        let path = format!("assets/{}-input.txt", self.id());
-        let file = File::open(path)?;
-        let reader = BufReader::new(file);
+        let reader = self.input_reader()?;
 
         let mut dial = Dial::new();
         for line_result in reader.lines() {
