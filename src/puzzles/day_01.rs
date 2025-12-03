@@ -34,7 +34,7 @@ impl Puzzle for Day1 {
         let file = File::open(path)?;
         let reader = BufReader::new(file);
 
-        let dial = Dial::new();
+        let mut dial = Dial::new();
         let mut count = 0;
         for line_result in reader.lines() {
             let line = line_result?;
@@ -91,12 +91,31 @@ impl Dial {
         }
     }
 
-    fn rotate(&self, dir: Dir, offset: u32) {
-        match dir {
-            Dir::Left => {}
-            Dir::Right => {}
-        }
+    fn rotate(&mut self, dir: Dir, offset: u32) {
+        let new_position = match dir {
+            Dir::Left => self.rotate_left(offset),
+            Dir::Right => self.rotate_right(offset),
+        };
 
-        todo!("not implemented")
+        self.position = new_position;
+    }
+
+    fn rotate_left(&self, offset: u32) -> u32 {
+        let max = i64::from(self.max); // never panics as u32 always into i64
+        let offset = i64::from(offset); // never panics as u32 always into i64
+        let position = i64::from(self.position); // never panics as u32 fits into i64
+        let mut new_position: i64 = position - offset;
+        while new_position < 0 {
+            new_position = new_position + max
+        }
+        new_position.try_into().unwrap() // should never panic as the loop ensures a positive new_position
+    }
+
+    fn rotate_right(&self, offset: u32) -> u32 {
+        let mut new_position = self.position + offset;
+        while new_position > self.max {
+            new_position = new_position - self.max
+        }
+        new_position
     }
 }
